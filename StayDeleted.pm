@@ -86,17 +86,24 @@ sub read_sd_file
 {
 	my $sd_file = shift;
 	
-	open SDF, "<$_";
+	open SDF, "<$sd_file";
 	my @lines = <SDF>;
 	close SDF;
-	
+		
 	my $file_for_action = $lines[0];
-	chomp $file_for_action;
+	$file_for_action = ltrim($file_for_action);
 	
 	my $action = $lines[1];
-	chomp $action;
+	$action = ltrim($action);
 	
 	return ($file_for_action, $action);
+}
+
+sub ltrim
+{
+	my $str = shift;
+	$str =~ s/\s*$//;
+	return $str;
 }
 
 1;

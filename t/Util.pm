@@ -8,7 +8,7 @@ use File::Copy;
 sub set_up
 {
 	mkdir 'temp';
-	for (qw(a b c)) {
+	for (qw(a b c windows unix)) {
 		copy("fixtures/$_.txt", "temp/$_.txt");
 	}
 }
