@@ -32,15 +32,9 @@ sub delete_marked_files
 	my $sd_directory = get_sd_directory($folder_to_search);
 	
 	for (glob("$sd_directory/*.txt")) {
-		open SDF, "<$_";
-		my @lines = <SDF>;
-		close SDF;
+		my ($local_file_for_action, $action) = read_sd_file($_);
 		
-		my $file_for_action = $lines[0];
-		chomp $file_for_action;
-		$file_for_action = "$folder_to_search/$file_for_action";
-		my $action = $lines[1];
-		chomp $action;
+		my $file_for_action = "$folder_to_search/$local_file_for_action";
 		
 		if ($action eq 'delete') {
 			if (-f $file_for_action) {
@@ -86,6 +80,23 @@ sub set_file_action
 	print SDF "$basename\n";
 	print SDF "$action\n";
 	close SDF;
+}
+
+sub read_sd_file
+{
+	my $sd_file = shift;
+	
+	open SDF, "<$_";
+	my @lines = <SDF>;
+	close SDF;
+	
+	my $file_for_action = $lines[0];
+	chomp $file_for_action;
+	
+	my $action = $lines[1];
+	chomp $action;
+	
+	return ($file_for_action, $action);
 }
 
 1;
