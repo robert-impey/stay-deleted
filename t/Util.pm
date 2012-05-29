@@ -8,17 +8,14 @@ use File::Copy;
 sub set_up
 {
 	mkdir 'temp';
-	copy("fixtures/a.txt", "temp/a.txt");
+	for (qw(a b c)) {
+		copy("fixtures/$_.txt", "temp/$_.txt");
+	}
 }
 
 sub tear_down
 {
-	chdir "temp";
-	foreach (glob ("* .*")) {
-		system "rm -rf $_" unless ($_ eq '.' or $_ eq '..');
-	}
-	chdir "..";
-	rmdir 'temp';
+	system 'rm -rf temp';
 }
 
 1;
