@@ -15,26 +15,14 @@ sub mark_file_for_deletion
 {
 	my $file_to_mark_for_deletion = shift;
 	
-	my $sd_directory = get_sd_directory($file_to_mark_for_deletion);
-	my $sd_file = get_sd_file($file_to_mark_for_deletion);
-	
-	open SDF, ">$sd_file";
-	print SDF basename($file_to_mark_for_deletion) . "\n";
-	print SDF "delete\n";
-	close SDF;
+	set_file_action($file_to_mark_for_deletion, 'delete');
 }
 
 sub unmark_file_for_deletion
 {
 	my $file_to_unmark_for_deletion = shift;
 	
-	my $sd_directory = get_sd_directory($file_to_unmark_for_deletion);
-	my $sd_file = get_sd_file($file_to_unmark_for_deletion);
-	
-	open SDF, ">$sd_file";
-	print SDF basename($file_to_unmark_for_deletion) . "\n";
-	print SDF "keep\n";
-	close SDF;
+	set_file_action($file_to_unmark_for_deletion, 'keep');
 }
 
 sub delete_marked_files
@@ -64,6 +52,20 @@ sub get_sd_file
 	my $sd_file = $sd_directory . '/' . md5_hex(encode_utf8(basename($file_to_mark_for_deletion))) . '.txt';
 	
 	return $sd_file;
+}
+
+sub set_file_action
+{
+	my $file_to_set_for_action = shift;
+	my $action = shift;
+	
+	my $sd_directory = get_sd_directory($file_to_set_for_action);
+	my $sd_file = get_sd_file($file_to_set_for_action);
+	
+	open SDF, ">$sd_file";
+	print SDF basename($file_to_set_for_action) . "\n";
+	print SDF "$action\n";
+	close SDF;
 }
 
 1;
