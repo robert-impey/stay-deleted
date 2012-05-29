@@ -28,6 +28,13 @@ sub unmark_file_for_deletion
 {
 	my $file_to_unmark_for_deletion = shift;
 	
+	my $sd_directory = get_sd_directory($file_to_unmark_for_deletion);
+	my $sd_file = get_sd_file($file_to_unmark_for_deletion);
+	
+	open SDF, ">$sd_file";
+	print SDF basename($file_to_unmark_for_deletion) . "\n";
+	print SDF "keep\n";
+	close SDF;
 }
 
 sub delete_marked_files
