@@ -57,8 +57,6 @@ sub get_sd_directory
 	
 	my $sd_directory = "$dirname/.stay-deleted";
 	
-	mkdir $sd_directory unless -d $sd_directory;
-	
 	return $sd_directory;
 }
 
@@ -81,6 +79,8 @@ sub set_file_action
 	
 	my $sd_directory = get_sd_directory($dirname);
 	my $sd_file = get_sd_file($basename);
+	
+	mkdir $sd_directory unless -d $sd_directory;
 	
 	open SDF, ">$sd_directory/$sd_file";
 	print SDF "$basename\n";
