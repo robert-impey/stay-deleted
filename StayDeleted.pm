@@ -9,6 +9,9 @@ our @EXPORT_OK = qw(
 
 use File::Basename;
 use File::Remove qw(remove);
+use File::Find::Rule;
+use Cwd;
+
 use Digest::MD5 qw(md5_hex);
 use Encode qw(encode_utf8);
 	
@@ -30,21 +33,32 @@ sub delete_marked_files
 {
 	my $folder_to_search = shift;
 	
-	my $sd_directory = get_sd_directory($folder_to_search);
+	my $start_dir = getcwd();
 	
-	for (glob("$sd_directory/*.txt")) {
-		my ($local_file_for_action, $action) = read_sd_file($_);
-		
-		my $file_for_action = "$folder_to_search/$local_file_for_action";
-		
-		if ($action eq 'delete') {
-			if (-f $file_for_action) {
-				unlink($file_for_action);
-			} elsif (-d $file_for_action) {
-				remove(\1, $file_for_action);
+	foreach (File::Find::Rule->directory->in($folder_to_search)) {
+		my $current_dir = "$start_dir/$_";
+		if (-d $current_dir) {
+			chdir $current_dir or die $!;
+			
+			my $sd_directory = get_sd_directory('.');
+			
+			if (-d $sd_directory) {
+				for (glob("$sd_directory/*.txt")) {
+					my ($file_for_action, $action) = read_sd_file($_);
+					
+					if ($action eq 'delete') {
+						if (-f $file_for_action) {
+							unlink($file_for_action);
+						} elsif (-d $file_for_action) {
+							remove(\1, $file_for_action);
+						}
+					}
+				}
 			}
 		}
 	}
+	
+	chdir($start_dir);
 }
 
 # Private
