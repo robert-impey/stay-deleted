@@ -5,6 +5,7 @@ our @EXPORT_OK = qw(set_up tear_down);
 
 use File::Copy;
 use File::Copy::Recursive qw(dircopy);
+use File::Remove qw(remove);
 
 sub set_up
 {
@@ -18,7 +19,7 @@ sub set_up
 
 sub tear_down
 {
-	system 'rm -rf temp';
+	remove(\1, 'temp');
 }
 
 1;
