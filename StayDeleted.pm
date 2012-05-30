@@ -8,6 +8,7 @@ our @EXPORT_OK = qw(
 );
 
 use File::Basename;
+use File::Remove qw(remove);
 use Digest::MD5 qw(md5_hex);
 use Encode qw(encode_utf8);
 	
@@ -39,6 +40,8 @@ sub delete_marked_files
 		if ($action eq 'delete') {
 			if (-f $file_for_action) {
 				unlink($file_for_action);
+			} elsif (-d $file_for_action) {
+				remove(\1, $file_for_action);
 			}
 		}
 	}

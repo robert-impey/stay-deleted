@@ -24,4 +24,9 @@ ok(!(-f 'temp/a.txt'), 'a.txt should have been deleted.');
 ok(-f 'temp/b.txt', 'b.txt should still be there.');
 ok(-f 'temp/c.txt', 'c.txt should still be there.');
 
+ok(-d 'temp/a', 'Directory "a" should be present before being deleted.');
+StayDeleted::mark_file_for_deletion('temp/a');
+StayDeleted::delete_marked_files('temp');
+ok(!(-d 'temp/a'), 'Directory "a" should have been deleted.');
+
 tear_down();
