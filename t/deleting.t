@@ -28,16 +28,7 @@ ok(-f 'temp/c.txt', 'c.txt should still be there.');
 tear_down();
 
 # Deleting directories
-set_up();
-
-ok(-d 'temp/a', 'Directory "a" should be present before being deleted.');
-
-StayDeleted::mark_file_for_deletion('temp/a');
-StayDeleted::delete_marked_files('temp');
-
-ok(!(-d 'temp/a'), 'Directory "a" should have been deleted.');
-
-tear_down();
+test_deleting_a_directory('temp/a');
 
 # Deleting files in directories.
 test_deleting_a_file('temp/a/foo.txt');
@@ -46,7 +37,7 @@ test_deleting_a_file('temp/a/foo.txt');
 test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 
 # Deleting files with non-ascii chars in the name.
-test_deleting_a_file('temp/한국어.txt');
+#test_deleting_a_file('temp/한국어.txt');
 
 # Subs
 
@@ -62,6 +53,22 @@ sub test_deleting_a_file
 	StayDeleted::delete_marked_files('temp');
 	
 	ok(!(-f  $file), "'$file' should have been deleted.");
+	
+	tear_down();	
+}
+
+sub test_deleting_a_directory
+{
+	my $directory = shift;
+	
+	set_up();
+	
+	ok(-d $directory, "'$directory' should be there at this point.");
+	
+	StayDeleted::mark_file_for_deletion($directory);
+	StayDeleted::delete_marked_files('temp');
+	
+	ok(!(-d  $directory), "'$directory' should have been deleted.");
 	
 	tear_down();	
 }
