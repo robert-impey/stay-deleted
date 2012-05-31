@@ -10,10 +10,11 @@ use File::Remove qw(remove);
 sub set_up
 {
 	mkdir 'temp';
-	for (qw(a b c windows unix)) {
+	for (qw(a b c windows unix 한국어)) {
 		copy("fixtures/$_.txt", "temp/$_.txt");
 	}
 	
+	copy("fixtures/A File with Spaces in the Name.txt", "temp/A File with Spaces in the Name.txt");
 	dircopy('fixtures/a', 'temp/a');
 }
 
