@@ -30,6 +30,8 @@ tear_down();
 # Deleting directories
 test_deleting_a_directory('temp/a');
 
+test_deleting_a_directory('temp/A Directory with Spaces');
+
 # Deleting files in directories.
 test_deleting_a_file('temp/a/foo.txt');
 
