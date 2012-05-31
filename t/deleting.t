@@ -46,7 +46,7 @@ test_deleting_a_file('temp/a/foo.txt');
 test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 
 # Deleting files with non-ascii chars in the name.
-#test_deleting_a_file('temp/한국어.txt');
+test_deleting_a_file('temp/한국어.txt');
 
 # Subs
 
