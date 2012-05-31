@@ -40,13 +40,28 @@ ok(!(-d 'temp/a'), 'Directory "a" should have been deleted.');
 tear_down();
 
 # Deleting files in directories.
-set_up();
+test_deleting_a_file('temp/a/foo.txt');
 
-ok(-f 'temp/a/foo.txt', 'a/foo.txt should be there at this point.');
+# Deleting files with spaces in the name
+test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 
-StayDeleted::mark_file_for_deletion('temp/a/foo.txt');
-StayDeleted::delete_marked_files('temp');
+# Deleting files with non-ascii chars in the name.
+#test_deleting_a_file('temp/한국어.txt');
 
-ok(!(-f 'temp/a/foo.txt'), 'a/foo.txt should have been deleted.');
+# Subs
 
-tear_down();
+sub test_deleting_a_file
+{
+	my $file = shift;
+	
+	set_up();
+	
+	ok(-f $file, "'$file' should be there at this point.");
+	
+	StayDeleted::mark_file_for_deletion($file);
+	StayDeleted::delete_marked_files('temp');
+	
+	ok(!(-f  $file), "'$file' should have been deleted.");
+	
+	tear_down();	
+}

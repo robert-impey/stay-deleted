@@ -10,7 +10,7 @@ our @EXPORT_OK = qw(
 use File::Basename;
 use File::Remove qw(remove);
 use File::Find::Rule;
-use Cwd;
+use Cwd qw(abs_path getcwd);
 
 use Digest::MD5 qw(md5_hex);
 use Encode qw(encode_utf8);
@@ -32,15 +32,16 @@ sub unmark_file_for_deletion
 sub delete_marked_files
 {
 	my $folder_to_search = shift;
+	$folder_to_search = abs_path($folder_to_search);
 	
 	my $start_dir = getcwd();
 	
 	foreach (File::Find::Rule->directory->in($folder_to_search)) {
-		my $current_dir = "$start_dir/$_";
+		my $current_dir = $_;
 		if (-d $current_dir) {
 			chdir $current_dir or die $!;
 			
-			my $sd_directory = get_sd_directory('.');
+			my $sd_directory = get_sd_directory($current_dir);
 			
 			if (-d $sd_directory) {
 				for (glob("$sd_directory/*.txt")) {
@@ -103,7 +104,7 @@ sub read_sd_file
 {
 	my $sd_file = shift;
 	
-	open SDF, "<$sd_file";
+	open SDF, "<$sd_file" or die "Cannot open $sd_file!: $!";
 	my @lines = <SDF>;
 	close SDF;
 		
