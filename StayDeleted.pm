@@ -10,6 +10,7 @@ our @EXPORT_OK = qw(
 use File::Basename;
 use File::Remove qw(remove);
 use File::Find::Rule;
+use File::Glob qw(bsd_glob);
 use Cwd qw(abs_path getcwd);
 
 use Digest::MD5 qw(md5_hex);
@@ -44,7 +45,7 @@ sub delete_marked_files
 			my $sd_directory = get_sd_directory($current_dir);
 			
 			if (-d $sd_directory) {
-				for (glob("$sd_directory/*.txt")) {
+				for (bsd_glob("$sd_directory/*.txt")) {
 					my ($file_for_action, $action) = read_sd_file($_);
 					
 					if ($action eq 'delete') {
