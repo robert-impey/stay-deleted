@@ -41,6 +41,10 @@ test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 # Deleting files with non-ascii chars in the name.
 #test_deleting_a_file('temp/한국어.txt');
 
+# Deleting files in a directory with spaces in the name
+test_deleting_a_file('temp/A Directory with Spaces/Foo Bar.txt');
+
+
 # Subs
 
 sub test_deleting_a_file
