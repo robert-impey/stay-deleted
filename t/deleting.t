@@ -39,7 +39,14 @@ test_deleting_a_file('temp/a/foo.txt');
 test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 
 # Deleting files with non-ascii chars in the name.
+<<<<<<< HEAD
 #test_deleting_a_file('temp/한국어.txt');
+=======
+TODO : {
+	local $TODO = 'Issues with git and perl with these chars on Mac OSX, Linux and Windows.';
+	test_deleting_a_file('temp/한국어.txt');
+}
+>>>>>>> Marked the test for unicode filenames as TODO.
 
 # Deleting files in a directory with spaces in the name
 test_deleting_a_file('temp/A Directory with Spaces/Foo Bar.txt');
