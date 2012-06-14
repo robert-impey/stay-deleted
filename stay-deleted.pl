@@ -49,12 +49,29 @@ __END__
 
 	stay-deleted.pl
 		Options:
+			-mark [FILE|DIR]
+			-unmark [FILE|DIR]
+			-delete [DIR]
 			-help brief help message
 			-man full documentation
 
 =head1 OPTIONS
 
 =over 8
+
+=item B<-mark [FILE|DIR]>
+
+Mark a file or directory for deletion.
+
+=item B<-unmark [FILE|DIR]>
+
+Tell the program not to delete a file or directory that had
+previously marked for deletion.
+
+=item B<-delete [DIR]>
+
+The program searches the given directory for stay-deleted files
+and deletes the files and directories that have been marked.
 
 =item B<-help>
 
