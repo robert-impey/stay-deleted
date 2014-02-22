@@ -7,14 +7,12 @@ use File::Copy;
 use File::Copy::Recursive qw(dircopy);
 use File::Remove qw(remove);
 
-sub set_up
-{
-	dircopy('fixtures', 'temp');
+sub set_up {
+	dircopy( 'fixtures', 'temp' );
 }
 
-sub tear_down
-{
-	remove(\1, 'temp');
+sub tear_down {
+	remove( \1, 'temp' );
 }
 
 1;
