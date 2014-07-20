@@ -30,10 +30,9 @@ sub unmark_file_for_deletion {
 
 sub delete_marked_files {
 	my $folder_to_search = shift;
-	$folder_to_search = abs_path($folder_to_search);
-
-	my $start_dir = getcwd();
-
+	
+	my $start_dir = &getcwd;
+	
 	foreach ( File::Find::Rule->directory->in($folder_to_search) ) {
 		my $current_dir = $_;
 		if ( -d $current_dir ) {
@@ -44,7 +43,7 @@ sub delete_marked_files {
 			if ( -d $sd_directory ) {
 				for ( bsd_glob("$sd_directory/*.txt") ) {
 					my ( $file_for_action, $action ) = read_sd_file($_);
-
+					
 					if ( $action eq 'delete' ) {
 						if ( -f $file_for_action ) {
 							unlink($file_for_action);
@@ -56,8 +55,8 @@ sub delete_marked_files {
 			}
 		}
 	}
-
-	chdir($start_dir);
+	
+	chdir $start_dir;
 }
 
 # Private
