@@ -16,6 +16,7 @@ my %opt = (
 			mark   => 0,
 			unmark => 0,
 			delete => 0,
+			verbose => 0,
 			help   => 0,
 			man    => 0
 );
@@ -24,6 +25,7 @@ GetOptions(
 			'mark=s'   => \$opt{mark},
 			'unmark=s' => \$opt{unmark},
 			'delete=s' => \$opt{delete},
+			'verbose|v' => \$opt{verbose},
 			'help|?'   => \$opt{help},
 			'man'      => \$opt{man}
   )
@@ -37,7 +39,7 @@ if ( $opt{mark} ) {
 } elsif ( $opt{unmark} ) {
 	unmark_file_for_deletion( $opt{unmark} );
 } elsif ( $opt{delete} ) {
-	delete_marked_files( $opt{delete} );
+	delete_marked_files( $opt{delete}, $opt{verbose});
 } else {
 	die "Tell me what to do!\n";
 }

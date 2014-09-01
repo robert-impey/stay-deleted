@@ -30,33 +30,41 @@ sub unmark_file_for_deletion {
 
 sub delete_marked_files {
 	my $folder_to_search = shift;
-	
-	my $start_dir = &getcwd;
-	
-	foreach ( File::Find::Rule->directory->in($folder_to_search) ) {
-		my $current_dir = $_;
-		if ( -d $current_dir ) {
-			chdir $current_dir or die $!;
+	my $verbose          = shift;
 
-			my $sd_directory = get_sd_directory($current_dir);
+	print "Deleting marked files from '$folder_to_search'\n" if $verbose;
 
-			if ( -d $sd_directory ) {
-				for ( bsd_glob("$sd_directory/*.txt") ) {
-					my ( $file_for_action, $action ) = read_sd_file($_);
-					
-					if ( $action eq 'delete' ) {
-						if ( -f $file_for_action ) {
-							unlink($file_for_action);
-						} elsif ( -d $file_for_action ) {
-							remove( \1, $file_for_action );
+	if ( -d $folder_to_search ) {
+		my $start_dir = &getcwd;
+
+		foreach ( File::Find::Rule->directory->in($folder_to_search) ) {
+			my $current_dir = $_;
+			if ( -d $current_dir ) {
+				chdir $current_dir or die $!;
+
+				my $sd_directory = get_sd_directory($current_dir);
+
+				if ( -d $sd_directory ) {
+					for ( bsd_glob("$sd_directory/*.txt") ) {
+						my ( $file_for_action, $action ) = read_sd_file($_);
+
+						if ( $action eq 'delete' ) {
+							if ( -f $file_for_action ) {
+								unlink($file_for_action);
+							}
+							elsif ( -d $file_for_action ) {
+								remove( \1, $file_for_action );
+							}
 						}
 					}
 				}
 			}
 		}
+
+		chdir $start_dir;
+	} else {
+		die "$folder_to_search does not exist!\n"
 	}
-	
-	chdir $start_dir;
 }
 
 # Private
