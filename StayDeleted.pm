@@ -18,6 +18,9 @@ use Encode qw(encode_utf8);
 
 sub mark_file_for_deletion {
 	my $file_to_mark_for_deletion = shift;
+	my $verbose          = shift;
+
+	print "Marking $file_to_mark_for_deletion for deletion\n" if $verbose;
 
 	set_file_action( $file_to_mark_for_deletion, 'delete' );
 }

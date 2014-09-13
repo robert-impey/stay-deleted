@@ -35,7 +35,7 @@ pod2usage(1) if $opt{help};
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $opt{man};
 
 if ( $opt{mark} ) {
-	mark_file_for_deletion( $opt{mark} );
+	mark_file_for_deletion( $opt{mark}, $opt{verbose} );
 } elsif ( $opt{unmark} ) {
 	unmark_file_for_deletion( $opt{unmark} );
 } elsif ( $opt{delete} ) {
