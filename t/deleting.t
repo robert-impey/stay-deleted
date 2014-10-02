@@ -46,7 +46,7 @@ test_deleting_a_file('temp/A File with Spaces in the Name.txt');
 TODO: {
 	local $TODO =
 'Issues with git and perl with these chars on Mac OSX, Linux and Windows.';
-	test_deleting_a_file('temp/한국어.txt');
+	test_deleting_a_file('temp/���������.txt');
 }
 
 # Deleting files in a directory with spaces in the name

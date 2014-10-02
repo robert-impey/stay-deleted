@@ -9,7 +9,7 @@ require "../StayDeleted.pm";
 use Util qw(set_up tear_down);
 
 test_file_marking( 'a.txt', 'a5e54d1fd7bb69a228ef0dcd2431367e' );
-test_file_marking( '한국어.txt',
+test_file_marking( '���������.txt',
 				   '40594a16245875754a6e62790f9872e0' );
 
 # Subs
