@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More 'no_plan';
 
-require "../StayDeleted.pm";
+use StayDeleted;
 use Util qw(set_up tear_down);
 
 test_file_marking( 'a.txt', 'a5e54d1fd7bb69a228ef0dcd2431367e' );
@@ -20,7 +20,7 @@ sub test_file_marking {
 	my $marked_file    = shift;
 	my $file_name_hash = shift;
 
-	my $tmp_dir = 'temp';
+	my $tmp_dir = 't/temp';
 
 	StayDeleted::mark_file_for_deletion("$tmp_dir/$marked_file");
 	my $sd_dir = "$tmp_dir/.stay-deleted";

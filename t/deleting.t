@@ -5,52 +5,52 @@ use warnings;
 
 use Test::More 'no_plan';
 
-require "../StayDeleted.pm";
+use StayDeleted;
 use Util qw(set_up tear_down);
 
 # Deleting Files
 set_up();
-StayDeleted::mark_file_for_deletion('temp/a.txt');
+StayDeleted::mark_file_for_deletion('t/temp/a.txt');
 
-StayDeleted::mark_file_for_deletion('temp/b.txt');
-StayDeleted::unmark_file_for_deletion('temp/b.txt');
+StayDeleted::mark_file_for_deletion('t/temp/b.txt');
+StayDeleted::unmark_file_for_deletion('t/temp/b.txt');
 
-ok( -f 'temp/a.txt', 'a.txt should be there at this point.' );
+ok( -f 't/temp/a.txt', 'a.txt should be there at this point.' );
 
-ok( -f 'temp/b.txt', 'b.txt should be there at this point.' );
+ok( -f 't/temp/b.txt', 'b.txt should be there at this point.' );
 
-ok( -f 'temp/c.txt', 'c.txt should be there at this point.' );
+ok( -f 't/temp/c.txt', 'c.txt should be there at this point.' );
 
-StayDeleted::delete_marked_files('temp');
+StayDeleted::delete_marked_files('t/temp');
 
-ok( !( -f 'temp/a.txt' ), 'a.txt should have been deleted.' );
+ok( !( -f 't/temp/a.txt' ), 'a.txt should have been deleted.' );
 
-ok( -f 'temp/b.txt', 'b.txt should still be there.' );
+ok( -f 't/temp/b.txt', 'b.txt should still be there.' );
 
-ok( -f 'temp/c.txt', 'c.txt should still be there.' );
+ok( -f 't/temp/c.txt', 'c.txt should still be there.' );
 
 tear_down();
 
 # Deleting directories
-test_deleting_a_directory('temp/a');
+test_deleting_a_directory('t/temp/a');
 
-test_deleting_a_directory('temp/A Directory with Spaces');
+test_deleting_a_directory('t/temp/A Directory with Spaces');
 
 # Deleting files in directories.
-test_deleting_a_file('temp/a/foo.txt');
+test_deleting_a_file('t/temp/a/foo.txt');
 
 # Deleting files with spaces in the name
-test_deleting_a_file('temp/A File with Spaces in the Name.txt');
+test_deleting_a_file('t/temp/A File with Spaces in the Name.txt');
 
 # Deleting files with non-ascii chars in the name.
 TODO: {
 	local $TODO =
 'Issues with git and perl with these chars on Mac OSX, Linux and Windows.';
-	test_deleting_a_file('temp/���������.txt');
+	test_deleting_a_file('t/temp/한국어.txt');
 }
 
 # Deleting files in a directory with spaces in the name
-test_deleting_a_file('temp/A Directory with Spaces/Foo Bar.txt');
+test_deleting_a_file('t/temp/A Directory with Spaces/Foo Bar.txt');
 
 # Subs
 
@@ -62,7 +62,7 @@ sub test_deleting_a_file {
 	ok( -f $file, "'$file' should be there at this point." );
 
 	StayDeleted::mark_file_for_deletion($file);
-	StayDeleted::delete_marked_files('temp');
+	StayDeleted::delete_marked_files('t/temp');
 
 	ok( !( -f $file ), "'$file' should have been deleted." );
 
@@ -77,7 +77,7 @@ sub test_deleting_a_directory {
 	ok( -d $directory, "'$directory' should be there at this point." );
 
 	StayDeleted::mark_file_for_deletion($directory);
-	StayDeleted::delete_marked_files('temp');
+	StayDeleted::delete_marked_files('t/temp');
 
 	ok( !( -d $directory ), "'$directory' should have been deleted." );
 
