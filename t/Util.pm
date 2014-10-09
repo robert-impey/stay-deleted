@@ -8,11 +8,11 @@ use File::Copy::Recursive qw(dircopy);
 use File::Remove qw(remove);
 
 sub set_up {
-	dircopy( 'fixtures', 'temp' );
+	dircopy( 't/fixtures', 't/temp' );
 }
 
 sub tear_down {
-	remove( \1, 'temp' );
+	remove( \1, 't/temp' );
 }
 
 1;

@@ -18,7 +18,7 @@ use Encode qw(encode_utf8);
 
 sub mark_file_for_deletion {
 	my $file_to_mark_for_deletion = shift;
-	my $verbose          = shift;
+	my $verbose                   = shift;
 
 	print "Marking $file_to_mark_for_deletion for deletion\n" if $verbose;
 
@@ -57,8 +57,10 @@ sub delete_marked_files {
 							}
 							elsif ( -d $file_for_action ) {
 								remove( \1, $file_for_action );
-							} elsif ($verbose) {
-								print "$file_for_action is not a file or a directory!\n";
+							}
+							elsif ($verbose) {
+								print
+"$file_for_action is not a file or a directory!\n";
 							}
 						}
 					}
@@ -67,8 +69,9 @@ sub delete_marked_files {
 		}
 
 		chdir $start_dir;
-	} else {
-		die "$folder_to_search does not exist!\n"
+	}
+	else {
+		die "$folder_to_search does not exist!\n";
 	}
 }
 
