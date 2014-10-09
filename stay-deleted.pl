@@ -5,7 +5,6 @@ use warnings;
 
 use Getopt::Long;
 use Pod::Usage;
-
 use StayDeleted qw(
   mark_file_for_deletion
   unmark_file_for_deletion
@@ -13,36 +12,34 @@ use StayDeleted qw(
 );
 
 my %opt = (
-	mark    => 0,
-	unmark  => 0,
-	delete  => 0,
-	verbose => 0,
-	help    => 0,
-	man     => 0
+			mark    => 0,
+			unmark  => 0,
+			delete  => 0,
+			verbose => 0,
+			help    => 0,
+			man     => 0
 );
 
 GetOptions(
-	'mark=s'    => \$opt{mark},
-	'unmark=s'  => \$opt{unmark},
-	'delete=s'  => \$opt{delete},
-	'verbose|v' => \$opt{verbose},
-	'help|?'    => \$opt{help},
-	'man'       => \$opt{man}
-) or pod2usage(2);
+			'mark=s'    => \$opt{mark},
+			'unmark=s'  => \$opt{unmark},
+			'delete=s'  => \$opt{delete},
+			'verbose|v' => \$opt{verbose},
+			'help|?'    => \$opt{help},
+			'man'       => \$opt{man}
+  )
+  or pod2usage(2);
 
 pod2usage(1) if $opt{help};
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $opt{man};
 
 if ( $opt{mark} ) {
 	mark_file_for_deletion( $opt{mark}, $opt{verbose} );
-}
-elsif ( $opt{unmark} ) {
+} elsif ( $opt{unmark} ) {
 	unmark_file_for_deletion( $opt{unmark} );
-}
-elsif ( $opt{delete} ) {
+} elsif ( $opt{delete} ) {
 	delete_marked_files( $opt{delete}, $opt{verbose} );
-}
-else {
+} else {
 	die "Tell me what to do!\n";
 }
 
