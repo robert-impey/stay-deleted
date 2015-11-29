@@ -6,18 +6,18 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use StayDeleted qw(
-  mark_file_for_deletion
-  unmark_file_for_deletion
-  delete_marked_files
+mark_file_for_deletion
+unmark_file_for_deletion
+delete_marked_files
 );
 
 my %opt = (
-			mark    => 0,
-			unmark  => 0,
-			delete  => 0,
-			verbose => 0,
-			help    => 0,
-			man     => 0
+    mark    => 0,
+    unmark  => 0,
+    delete  => 0,
+    verbose => 0,
+    help    => 0,
+    man     => 0
 );
 
 GetOptions(
@@ -34,30 +34,30 @@ pod2usage(1) if $opt{help};
 pod2usage( -exitstatus => 0, -verbose => 2 ) if $opt{man};
 
 if ( $opt{mark} ) {
-	mark_file_for_deletion( $opt{mark}, $opt{verbose} );
+    mark_file_for_deletion( $opt{mark}, $opt{verbose} );
 } elsif ( $opt{unmark} ) {
-	unmark_file_for_deletion( $opt{unmark} );
+    unmark_file_for_deletion( $opt{unmark} );
 } elsif ( $opt{delete} ) {
-	delete_marked_files( $opt{delete}, $opt{verbose} );
+    delete_marked_files( $opt{delete}, $opt{verbose} );
 } else {
-	die "Tell me what to do!\n";
+    die "Tell me what to do!\n";
 }
 
 __END__
 
 =head1 NAME
 
-	stay-deleted.pl - For files that won't go away.
+  stay-deleted.pl - For files that won't go away.
 
 =head1 SYNOPSIS
 
-	stay-deleted.pl
-		Options:
-			-mark [FILE|DIR]
-			-unmark [FILE|DIR]
-			-delete [DIR]
-			-help brief help message
-			-man full documentation
+  stay-deleted.pl
+    Options:
+      -mark [FILE|DIR]
+      -unmark [FILE|DIR]
+      -delete [DIR]
+      -help brief help message
+      -man full documentation
 
 =head1 OPTIONS
 
