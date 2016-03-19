@@ -59,7 +59,7 @@ sub delete_marked_files {
                                 remove( \1, $file_for_action );
                             }
                             elsif ($verbose) {
-                                print "$file_for_action is not a file or a directory!\n";
+                                print "$current_dir/$file_for_action is not a file or a directory!\n";
                             }
                         }
                     }
