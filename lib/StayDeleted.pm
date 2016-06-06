@@ -12,7 +12,6 @@ unmark_file_for_deletion
 delete_marked_files
 );
 
-
 use File::Basename;
 use File::Remove qw(remove);
 use File::Find::Rule;
