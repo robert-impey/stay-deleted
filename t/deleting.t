@@ -45,10 +45,7 @@ test_deleting_a_file("$tmp_dir/a/foo.txt");
 test_deleting_a_file("$tmp_dir/A File with Spaces in the Name.txt");
 
 # Deleting files with non-ascii chars in the name.
-TODO: {
-    local $TODO = 'Issues with git and perl with these chars on Mac OSX, Linux and Windows.';
-    test_deleting_a_file("$tmp_dir/한국ᄋ");
-}
+test_deleting_a_file("$tmp_dir/한국어.txt");
 
 # Deleting files in a directory with spaces in the name
 test_deleting_a_file("$tmp_dir/A Directory with Spaces/Foo Bar.txt");
