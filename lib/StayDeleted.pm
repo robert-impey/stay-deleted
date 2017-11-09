@@ -1,7 +1,12 @@
 package StayDeleted;
+
 use strict;
+use warnings;
+
 use base 'Exporter';
+
 our @EXPORT_OK = qw(
+$VERSION
 mark_file_for_deletion
 unmark_file_for_deletion
 delete_marked_files
@@ -42,14 +47,20 @@ sub delete_marked_files {
 
         foreach ( File::Find::Rule->directory->in($folder_to_search) ) {
             my $current_dir = $_;
+            print "Searching: $current_dir\n";
+
             if ( -d $current_dir ) {
+                print "$current_dir is a directory!\n";
                 chdir $current_dir or die $!;
 
                 my $sd_directory = get_sd_directory($current_dir);
 
                 if ( -d $sd_directory ) {
+                    print "SD: $sd_directory\n";
+
                     for ( bsd_glob("$sd_directory/*.txt") ) {
                         my ( $file_for_action, $action ) = read_sd_file($_);
+                        print $file_for_action, "\n";
 
                         if ( $action eq 'delete' ) {
                             if ( -f $file_for_action ) {
@@ -64,6 +75,8 @@ sub delete_marked_files {
                         }
                     }
                 }
+            } else {
+                print "$current_dir is not a directory!\n";
             }
         }
 
