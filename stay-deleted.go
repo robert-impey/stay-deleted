@@ -21,17 +21,17 @@ func main() {
 	flag.Parse()
 
 	if directoryToSweep != "" {
-		sweepDirectory(directoryToSweep)
+		SweepDirectory(directoryToSweep)
 	} else if fileToMark != "" {
-		markFile(fileToMark)
+		MarkFile(fileToMark)
 	} else if fileToUnmark != "" {
-		unmarkFile(fileToUnmark)
+		UnmarkFile(fileToUnmark)
 	} else {
 		fmt.Println("Please tell me what to do!")
 	}
 }
 
-func sweepDirectory(directoryToSweep string) {
+func SweepDirectory(directoryToSweep string) {
 	var absDirectoryToSweep, err = filepath.Abs(directoryToSweep)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
@@ -41,15 +41,23 @@ func sweepDirectory(directoryToSweep string) {
 	}
 }
 
-func markFile(fileToMark string) {
-	var absFileToMark, err = filepath.Abs(fileToMark)
+func MarkFile(fileToMark string) {
+	setActionForFile(fileToMark, "delete")
+}
+
+func UnmarkFile(fileToUnmark string) {
+	setActionForFile(fileToUnmark, "keep")
+}
+
+func setActionForFile(fileName string, action string) {
+	var absFileName, err = filepath.Abs(fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
-			fileToMark)
+			fileName)
 	} else {
-		fmt.Printf("Marking: '%v'!\n", absFileToMark)
-		fileToMarkBase := filepath.Base(absFileToMark)
-		sdFileName, err := getSdFile(absFileToMark)
+		fmt.Printf("Marking: '%v'!\n", absFileName)
+		fileBase := filepath.Base(absFileName)
+		sdFileName, err := getSdFile(absFileName)
 		if err == nil {
 			fmt.Printf("SD File: '%v'!\n", sdFileName)
 			sdFolder := filepath.Dir(sdFileName)
@@ -65,18 +73,8 @@ func markFile(fileToMark string) {
 			}
 			defer sdFile.Close()
 
-			fmt.Fprintf(sdFile, "%v\ndelete\n", fileToMarkBase)
+			fmt.Fprintf(sdFile, "%v\n%v\n", fileBase, action)
 		}
-	}
-}
-
-func unmarkFile(fileToUnmark string) {
-	var absFileToUnmark, err = filepath.Abs(fileToUnmark)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
-			fileToUnmark)
-	} else {
-		fmt.Printf("Unmarking: '%v'!\n", absFileToUnmark)
 	}
 }
 
