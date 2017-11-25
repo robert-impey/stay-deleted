@@ -48,9 +48,24 @@ func markFile(fileToMark string) {
 			fileToMark)
 	} else {
 		fmt.Printf("Marking: '%v'!\n", absFileToMark)
-		sdFile, err := getSdFile(absFileToMark)
+		fileToMarkBase := filepath.Base(absFileToMark)
+		sdFileName, err := getSdFile(absFileToMark)
 		if err == nil {
-			fmt.Printf("SD File: '%v'!\n", sdFile)
+			fmt.Printf("SD File: '%v'!\n", sdFileName)
+			sdFolder := filepath.Dir(sdFileName)
+
+			if _, err := os.Stat(sdFolder); os.IsNotExist(err) {
+				fmt.Printf("Making directory '%v'\n", sdFolder)
+				os.Mkdir(sdFolder, 0755)
+			}
+
+			sdFile, err := os.Create(sdFileName)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Couldn't create file '%v'!\n", sdFileName)
+			}
+			defer sdFile.Close()
+
+			fmt.Fprintf(sdFile, "%v\ndelete\n", fileToMarkBase)
 		}
 	}
 }
