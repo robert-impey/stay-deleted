@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 )
 
+const sdFolderName = ".stay-deleted"
+
 func main() {
 	var fileToMark, fileToUnmark, directoryToSweep string
 	flag.StringVar(&fileToMark, "mark", "",
@@ -51,7 +53,7 @@ func walker(path string, info os.FileInfo, err error) error {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return err
 	} else {
-		if info.IsDir() && info.Name() == ".stay-deleted" {
+		if info.IsDir() && info.Name() == sdFolderName {
 			sdFolder := path
 			fmt.Printf("Search SD folder '%v'\n", sdFolder)
 			containingFolder := filepath.Dir(sdFolder)
@@ -140,7 +142,7 @@ func setActionForFile(fileName string, action string) {
 
 func getSdFolder(file string) (string, error) {
 	dir := filepath.Dir(file)
-	attemptedAbsSdFolder := dir + "/.stay-deleted"
+	attemptedAbsSdFolder := filepath.Join(dir, sdFolderName)
 	absSdFolder, err := filepath.Abs(attemptedAbsSdFolder)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to find the absolute path of '%v'!",
