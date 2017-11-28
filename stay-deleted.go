@@ -1,4 +1,6 @@
 // For making sure that files stay deleted
+// For example, if a directory is backed up using
+// rsync running in both directions.
 package main
 
 import (
@@ -23,36 +25,38 @@ func main() {
 
 	flag.Parse()
 
+	var err error
 	if directoryToSweep != "" {
-		sweepDirectory(directoryToSweep)
+		err = sweepDirectory(directoryToSweep)
 	} else if fileToMark != "" {
-		markFile(fileToMark)
+		err = markFile(fileToMark)
 	} else if fileToUnmark != "" {
-		unmarkFile(fileToUnmark)
+		err = unmarkFile(fileToUnmark)
 	} else {
 		fmt.Println("Please tell me what to do!")
+		os.Exit(1)
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: '%v'!\n", err)
 	}
 }
 
-func sweepDirectory(directoryToSweep string) {
+func sweepDirectory(directoryToSweep string) error {
 	var absDirectoryToSweep, err = filepath.Abs(directoryToSweep)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
 			directoryToSweep)
-	} else {
-		fmt.Printf("Sweeping: '%v'!\n", absDirectoryToSweep)
-		err := filepath.Walk(absDirectoryToSweep, walker)
+		return err
+	}
+
+	fmt.Printf("Sweeping: '%v'!\n", absDirectoryToSweep)
+	filesToDelete := make([]string, 0)
+	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return err
 		}
-	}
-}
 
-func walker(path string, info os.FileInfo, err error) error {
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
-	} else {
 		if info.IsDir() && info.Name() == sdFolderName {
 			sdFolder := path
 			fmt.Printf("Search SD folder '%v'\n", sdFolder)
@@ -62,27 +66,60 @@ func walker(path string, info os.FileInfo, err error) error {
 			sdFiles, err := filepath.Glob(filepath.Join(sdFolder, "*.txt"))
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
-			} else {
-				for _, sdFile := range sdFiles {
-					fmt.Printf("SD File '%v'\n", sdFile)
-					err := processSdFile(sdFile, containingFolder)
-					if err != nil {
-						fmt.Fprintf(os.Stderr, "%v\n", err)
-					}
+				return err
+			}
+
+			for _, sdFile := range sdFiles {
+				fmt.Printf("SD File '%v'\n", sdFile)
+				fileToProcessName, action, err := getActionForFile(sdFile, containingFolder)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", err)
+					return err
+				}
+
+				if action == "delete" {
+					fmt.Printf("Deleting '%v'\n", fileToProcessName)
+					filesToDelete = append(filesToDelete, fileToProcessName)
+				} else if action == "keep" {
+					fmt.Printf("Keeping '%v'\n", fileToProcessName)
+				} else {
+					return fmt.Errorf("Unrecognised action '%v'!\n", action)
 				}
 			}
 		}
+
+		return nil
 	}
+
+	err = filepath.Walk(absDirectoryToSweep, walker)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return err
+	}
+
+	for _, fileToDelete := range filesToDelete {
+		fmt.Printf("Deleting: '%v'\n", fileToDelete)
+		os.RemoveAll(fileToDelete)
+	}
+
 	return nil
 }
 
-func processSdFile(sdFileName string, containingFolder string) error {
+func markFile(fileToMark string) error {
+	return setActionForFile(fileToMark, "delete")
+}
+
+func unmarkFile(fileToUnmark string) error {
+	return setActionForFile(fileToUnmark, "keep")
+}
+
+func getActionForFile(sdFileName, containingFolder string) (string, string, error) {
 	sdFile, err := os.Open(sdFileName)
 	defer sdFile.Close()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return err
+		return "", "", err
 	}
 
 	input := bufio.NewScanner(sdFile)
@@ -91,36 +128,24 @@ func processSdFile(sdFileName string, containingFolder string) error {
 	input.Scan()
 	action := input.Text()
 
-	if action == "delete" {
-		fmt.Printf("Deleting '%v'\n", fileToProcessName)
-		os.RemoveAll(fileToProcessName)
-	} else if action == "keep" {
-		fmt.Printf("Keeping '%v'\n", fileToProcessName)
-	} else {
-		return fmt.Errorf("Unrecognised action '%v'!\n", action)
-	}
-
-	return nil
+	return fileToProcessName, action, nil
 }
 
-func markFile(fileToMark string) {
-	setActionForFile(fileToMark, "delete")
-}
-
-func unmarkFile(fileToUnmark string) {
-	setActionForFile(fileToUnmark, "keep")
-}
-
-func setActionForFile(fileName string, action string) {
+func setActionForFile(fileName string, action string) error {
 	var absFileName, err = filepath.Abs(fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
 			fileName)
+		return err
 	} else {
 		fmt.Printf("Marking: '%v'!\n", absFileName)
 		fileBase := filepath.Base(absFileName)
 		sdFileName, err := getSdFile(absFileName)
-		if err == nil {
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to get sd file name for '%v'!",
+				absFileName)
+			return err
+		} else {
 			fmt.Printf("SD File: '%v'!\n", sdFileName)
 			sdFolder := filepath.Dir(sdFileName)
 
@@ -130,13 +155,15 @@ func setActionForFile(fileName string, action string) {
 			}
 
 			sdFile, err := os.Create(sdFileName)
+			defer sdFile.Close()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Couldn't create file '%v'!\n", sdFileName)
+				return err
 			}
-			defer sdFile.Close()
 
 			fmt.Fprintf(sdFile, "%v\n%v\n", fileBase, action)
 		}
+		return nil
 	}
 }
 
@@ -156,6 +183,7 @@ func getSdFolder(file string) (string, error) {
 func getSdFile(file string) (string, error) {
 	sdFolder, err := getSdFolder(file)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to get sd folder for '%v'!", file)
 		return "", err
 	} else {
 		fileBase := filepath.Base(file)
