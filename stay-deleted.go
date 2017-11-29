@@ -14,6 +14,10 @@ import (
 
 const sdFolderName = ".stay-deleted"
 
+type ActionForFile struct {
+	file, action string
+}
+
 func main() {
 	var fileToMark, fileToUnmark, directoryToSweep string
 	flag.StringVar(&fileToMark, "mark", "",
@@ -71,19 +75,20 @@ func sweepDirectory(directoryToSweep string) error {
 
 			for _, sdFile := range sdFiles {
 				fmt.Printf("SD File '%v'\n", sdFile)
-				fileToProcessName, action, err := getActionForFile(sdFile, containingFolder)
+				actionForFile, err := getActionForFile(sdFile, containingFolder)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "%v\n", err)
 					return err
 				}
 
-				if action == "delete" {
-					fmt.Printf("Deleting '%v'\n", fileToProcessName)
-					filesToDelete = append(filesToDelete, fileToProcessName)
-				} else if action == "keep" {
-					fmt.Printf("Keeping '%v'\n", fileToProcessName)
+				if actionForFile.action == "delete" {
+					fmt.Printf("Deleting '%v'\n", actionForFile.file)
+					filesToDelete = append(filesToDelete, actionForFile.file)
+				} else if actionForFile.action == "keep" {
+					fmt.Printf("Keeping '%v'\n", actionForFile.file)
 				} else {
-					return fmt.Errorf("Unrecognised action '%v'!\n", action)
+					return fmt.Errorf("Unrecognised action '%v'!\n",
+						actionForFile.action)
 				}
 			}
 		}
@@ -113,13 +118,13 @@ func unmarkFile(fileToUnmark string) error {
 	return setActionForFile(fileToUnmark, "keep")
 }
 
-func getActionForFile(sdFileName, containingFolder string) (string, string, error) {
+func getActionForFile(sdFileName, containingFolder string) (ActionForFile, error) {
 	sdFile, err := os.Open(sdFileName)
 	defer sdFile.Close()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return "", "", err
+		return ActionForFile{"", ""}, err
 	}
 
 	input := bufio.NewScanner(sdFile)
@@ -128,14 +133,13 @@ func getActionForFile(sdFileName, containingFolder string) (string, string, erro
 	input.Scan()
 	action := input.Text()
 
-	return fileToProcessName, action, nil
+	return ActionForFile{fileToProcessName, action}, nil
 }
 
 func setActionForFile(fileName string, action string) error {
 	var absFileName, err = filepath.Abs(fileName)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n",
-			fileName)
+		fmt.Fprintf(os.Stderr, "Unable to find the absolute path for '%v'!\n", fileName)
 		return err
 	} else {
 		fmt.Printf("Marking: '%v'!\n", absFileName)
@@ -157,7 +161,8 @@ func setActionForFile(fileName string, action string) error {
 			sdFile, err := os.Create(sdFileName)
 			defer sdFile.Close()
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Couldn't create file '%v'!\n", sdFileName)
+				fmt.Fprintf(os.Stderr, "Couldn't create file '%v'!\n",
+					sdFileName)
 				return err
 			}
 
