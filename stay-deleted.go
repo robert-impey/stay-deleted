@@ -53,7 +53,7 @@ func sweepDirectory(directoryToSweep string) error {
 		return err
 	}
 
-	fmt.Printf("Sweeping: '%v'!\n", absDirectoryToSweep)
+	fmt.Printf("Sweeping: '%v'\n", absDirectoryToSweep)
 	filesToDelete := make([]string, 0)
 	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
