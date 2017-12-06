@@ -19,19 +19,23 @@ type ActionForFile struct {
 }
 
 func main() {
-	var fileToMark, fileToUnmark, directoryToSweep string
+	var fileToMark, fileToUnmark, directoryToSweep, sweepFromFile string
 	flag.StringVar(&fileToMark, "mark", "",
 		"The file or directory to mark for deletion")
 	flag.StringVar(&fileToUnmark, "unmark", "",
 		"The file or directory whose mark for deletion you want to remove")
 	flag.StringVar(&directoryToSweep, "delete", "",
 		"The directory to sweep")
+	flag.StringVar(&sweepFromFile, "sweepFrom", "",
+		"A file containing directories to sweep")
 
 	flag.Parse()
 
 	var err error
 	if directoryToSweep != "" {
 		err = sweepDirectory(directoryToSweep)
+	} else if sweepFromFile != "" {
+		err = sweepFrom(sweepFromFile)
 	} else if fileToMark != "" {
 		err = markFile(fileToMark)
 	} else if fileToUnmark != "" {
@@ -105,6 +109,28 @@ func sweepDirectory(directoryToSweep string) error {
 	for _, fileToDelete := range filesToDelete {
 		fmt.Printf("Deleting: '%v'\n", fileToDelete)
 		os.RemoveAll(fileToDelete)
+	}
+
+	return nil
+}
+
+func sweepFrom(sweepFromFileName string) error {
+	sweepFromFile, err := os.Open(sweepFromFileName)
+	defer sweepFromFile.Close()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to open file to sweep from: %v\n", err)
+		return err
+	}
+
+	input := bufio.NewScanner(sweepFromFile)
+	for input.Scan() {
+		directoryToSweep := input.Text()
+		err := sweepDirectory(directoryToSweep)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to sweep from: '%v' - '%v'\n", directoryToSweep, err)
+			continue
+		}
 	}
 
 	return nil
