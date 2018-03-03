@@ -91,8 +91,8 @@ func sweepDirectory(directoryToSweep string) error {
 				} else if actionForFile.action == "keep" {
 					fmt.Printf("Keeping '%v'\n", actionForFile.file)
 				} else {
-					return fmt.Errorf("Unrecognised action '%v'!\n",
-						actionForFile.action)
+					fmt.Fprintf(os.Stderr, "Unrecognised action '%v' from '%v'!\n",
+						actionForFile.action, sdFile)
 				}
 			}
 		}
